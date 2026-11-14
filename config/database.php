@@ -2,6 +2,11 @@
 
 use Illuminate\Support\Str;
 
+$sslCa = env('MYSQL_ATTR_SSL_CA');
+$resolvedSslCa = ($sslCa && file_exists($sslCa))
+    ? $sslCa
+    : (file_exists('/etc/ssl/certs/ca-certificates.crt') ? '/etc/ssl/certs/ca-certificates.crt' : null);
+
 return [
 
     /*
@@ -48,7 +53,7 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                \PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+                \PDO::MYSQL_ATTR_SSL_CA => $resolvedSslCa,
             ]) : [],
         ],
 
