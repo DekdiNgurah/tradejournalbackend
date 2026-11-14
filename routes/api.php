@@ -20,9 +20,9 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 // PROTECTED ROUTES (WAJIB LOGIN)
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user', function (Request $request) {
-        return response()->json($request->user());
-    });
+    // Route::get('/user', function (Request $request) {
+    //     return response()->json($request->user());
+    // });
 
     Route::get('/user', [ProfileController::class, 'show']);
 

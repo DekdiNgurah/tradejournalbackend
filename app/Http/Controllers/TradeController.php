@@ -9,21 +9,21 @@ use App\Http\Controllers\Controller;
 
 class TradeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
-        $trades = $request->user()->trades()->with('images')->orderBy('trade_date', 'desc')->paginate(10);
+        $trades = $request->user()
+            ->trades()
+            ->with(['images:id,trade_id,image_path'])
+            ->orderBy('trade_date', 'desc')
+            ->paginate(10);
+
         return TradeResource::collection($trades);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $normalizedDirection = strtolower((string) $request->input('direction', ''));
+
         if ($normalizedDirection !== '') {
             $request->merge(['direction' => $normalizedDirection]);
         }
@@ -42,30 +42,33 @@ class TradeController extends Controller
 
         $trades = $request->user()->trades()->create($validate);
 
-        return (new TradeResource($trades))->response()->setStatusCode(201);
+        return (new TradeResource($trades))
+            ->response()
+            ->setStatusCode(201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Request $request, string $id)
     {
-        $trade = $request->user()->trades()->with('images')->findOrFail($id);
+        $trade = $request->user()
+            ->trades()
+            ->with('images')
+            ->findOrFail($id);
 
         return new TradeResource($trade);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, String $id)
+    public function update(Request $request, string $id)
     {
         $normalizedDirection = strtolower((string) $request->input('direction', ''));
+
         if ($normalizedDirection !== '') {
             $request->merge(['direction' => $normalizedDirection]);
         }
 
-        $trade = $request->user()->trades()->with('images')->findOrFail($id);
+        $trade = $request->user()
+            ->trades()
+            ->with('images')
+            ->findOrFail($id);
 
         $validated = $request->validate([
             'trade_date'  => 'required|date',
@@ -84,12 +87,12 @@ class TradeController extends Controller
         return new TradeResource($trade);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Request $request, string $id)
     {
-        $trade = $request->user()->trades()->with('images')->findOrFail($id);
+        $trade = $request->user()
+            ->trades()
+            ->with('images')
+            ->findOrFail($id);
 
         $trade->delete();
 
